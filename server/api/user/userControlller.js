@@ -1,5 +1,7 @@
 const User = require("./userModel")
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
 
 const createUser = async(req, res) => {
@@ -30,7 +32,9 @@ const createUser = async(req, res) => {
                 error: validation
             })
         }
+
         const hashedPassword = await bcrypt.hash(password, 10)
+
 
         const user = new User({
             name: name,
@@ -51,10 +55,52 @@ const createUser = async(req, res) => {
         res.json({
             status: 500,
             success: false,
-            message: "interval server error",
+            message: "internal server error",
             error: err.message
         })
 
     }
 }
-module.exports = { createUser }
+
+const loginUser = async(req, res) => {
+    try {
+        const { email, password } = req.body
+        const user = await User.findOne({ email })
+        if (!user) {
+            return res.json({
+                status: 401,
+                success: false,
+                message: "it is not a valid user"
+            })
+        }
+
+        const matchPassword = await bcrypt.compare(password, user.password)
+        if (!matchPassword) {
+            return res.json({
+                status: 404,
+                success: false,
+                message: "password is not valid"
+
+            })
+        }
+
+        const token = jwt.sign({ userId: user._id, userEmail: user.email },
+            process.env.SECRET_KEY, { expiresIn: "1d" }
+        )
+        res.json({
+            status: 200,
+            success: true,
+            message: "user  logged in  succesfully",
+            token
+        })
+    } catch (err) {
+        res.json({
+            status: 500,
+            success: false,
+            message: "user is not login",
+            error: err.message
+        })
+
+    }
+}
+module.exports = { createUser, loginUser }
