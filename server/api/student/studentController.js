@@ -1,10 +1,13 @@
-const User = require("./userModel")
+const Student = require("./studentModel")
 const bcrypt = require("bcryptjs")
 
 
-const createUser = async(req, res) => {
+const createStudent = async(req, res) => {
     try {
-        const { name, email, address, contact, password } = req.body
+
+
+        const { name, email, address, phone, password, studentClass } = req.body
+
         const validation = []
 
         if (!name || typeof name !== "string") {
@@ -13,18 +16,22 @@ const createUser = async(req, res) => {
         if (!email || typeof email !== "string") {
             validation.push("email is required and type must be string ")
         }
-        if (!address || typeof address !== "string") {
-            validation.push("address is required and type must be string ")
-        }
-        if (!contact || typeof contact !== "string") {
-            validation.push("contact is required and type must be string ")
-        }
         if (!password || typeof password !== "string") {
             validation.push("password is required and type must be string ")
         }
+        if (!studentClass || typeof studentClass !== "string") {
+            validation.push("studentClass is required and type must be string ")
+        }
+        if (!address || typeof address !== "string") {
+            validation.push("address is required and type must be string ")
+        }
+
+        if (!phone || typeof phone !== "string") {
+            validation.push("phone is required and type must be string ")
+        }
+
         if (validation.length > 0) {
-            return res.json({
-                status: 400,
+            return res.status(400).json({
                 success: false,
                 message: "validation error",
                 error: validation
@@ -32,29 +39,30 @@ const createUser = async(req, res) => {
         }
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const user = new User({
+        const student = new Student({
             name: name,
             email: email,
             password: hashedPassword,
+            studentClass: studentClass,
             address: address,
-            contact: contact
+            phone: phone
         })
 
-        await user.save()
+        await student.save()
         res.json({
             status: 201,
             success: true,
-            message: "new user is create successfully",
-            data: user
+            message: "new student is create successfully",
+            data: student
         })
     } catch (err) {
         res.json({
             status: 500,
             success: false,
-            message: "interval server error",
+            message: "internal server error",
             error: err.message
         })
 
     }
 }
-module.exports = { createUser }
+module.exports = { createStudent }
