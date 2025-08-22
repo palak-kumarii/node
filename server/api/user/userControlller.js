@@ -64,8 +64,8 @@ const createUser = async(req, res) => {
 
 const loginUser = async(req, res) => {
     try {
-        const { email, password } = req.body
-        const user = await User.findOne({ email })
+        const { name, email, password } = req.body
+        const user = await User.findOne({ email, name })
         if (!user) {
             return res.json({
                 status: 401,
@@ -84,7 +84,7 @@ const loginUser = async(req, res) => {
             })
         }
 
-        const token = jwt.sign({ userId: user._id, userEmail: user.email },
+        const token = jwt.sign({ userId: user._id, userEmail: user.email, userName: user.name },
             process.env.SECRET_KEY, { expiresIn: "1d" }
         )
         res.json({
