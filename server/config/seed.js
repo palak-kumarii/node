@@ -17,7 +17,7 @@ const createAdmin = async(req, res) => {
 
         const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10)
 
-        const admin = new user({
+        const admin = new User({
             name: process.env.ADMIN_NAME,
             email: process.env.ADMIN_EMAIL,
             password: hashedPassword,

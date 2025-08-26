@@ -10,9 +10,9 @@ const { createUser, loginUser, getAllUser, getUserById, updateUserById, deleteUs
 router.post("/createuser", createUser)
 router.post("/createstudent", createStudent)
 router.post("/loginuser", loginUser)
-router.post("/getalluser", getAllUser)
+router.get("/getalluser", getAllUser)
 router.post("/getuserbyid", getUserById)
-router.post("/updateuserbyid", updateUserById)
-router.post("/deleteuserbyid", deleteUserById)
+    // router.post("/updateuserbyid", updateUserById)
+    // router.post("/deleteuserbyid", deleteUserById)
 
 module.exports = router

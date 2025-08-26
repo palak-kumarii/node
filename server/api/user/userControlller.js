@@ -105,89 +105,68 @@ const loginUser = async(req, res) => {
 }
 
 
+//getalluser
+
 const getAllUser = async(req, res) => {
     try {
-        const user = await User.find()
+        let { limit = 3, page = 1 } = req.query
+        limit = parseInt(limit)
+        page = parseInt(page)
+
+        //calculation of kip
+
+        const skip = (page - 1) * limit
+        const user = await User.find().skip(skip).limit(limit)
+        const totalDocument = await User.countDocuments
         res.json({
-            status: 2000,
+            status: 200,
             success: true,
             message: "all user is get successfully",
-            data: user
+            data: user,
+            pagination: {
+                totalDocument,
+                currentPage: page,
+                totalPage: Math.ceil(totalDocument / limit),
+                perPage: 1
+            }
         })
     } catch (err) {
+
         res.json({
             status: 500,
             success: false,
             message: "internal server error",
             error: err.message
         })
-
     }
 }
-
 
 //get user by id
 
 const getUserById = async(req, res) => {
-        try {
-            const { id } = req.body
-            if (!id) {
-                return res.json({
-                    status: 400,
-                    success: false,
-                    message: "id is required",
-
-                })
-            }
-            const user = await User.findById(id)
-            if (!user) {
-                return res.json({
-                    status: 400,
-                    success: false,
-                    message: "id is wrong",
-
-                })
-            }
-            res.json({
-                status: 200,
-                success: true,
-                message: "user is get successfully",
-                data: user
-            })
-
-        } catch (err) {
-            res.json({
-                status: 500,
-                success: false,
-                message: "internal server error",
-                error: err.message
-            })
-        }
-    }
-    //update user by id 
-
-const updateUserById = async(req, res) => {
     try {
-        const { id, ...data } = req.body
+        const { id } = req.query
         if (!id) {
             return res.json({
                 status: 400,
                 success: false,
-                message: "id is required"
+                message: "id is required",
+
             })
         }
-        const user = await User.findByIdAndUpdate(id, data, { new: true })
+        const user = await User.findById(id)
         if (!user) {
-            res.json({
+            return res.json({
                 status: 400,
                 success: false,
-                message: "id is wrong"
+                message: "id is wrong",
+
             })
         }
         res.json({
             status: 200,
-            success: false,
-            message: "user is updated successfully",
+            success: true,
+            message: "user is get successfully",
             data: user
         })
 
@@ -198,43 +177,145 @@ const updateUserById = async(req, res) => {
             message: "internal server error",
             error: err.message
         })
-
     }
 }
 
-//delete
-const deleteUserById = async(req, res) => {
-    try {
-        const { id } = req.body
-        if (!id) {
-            return res.json({
-                status: 400,
-                success: false,
-                message: "id is required"
-            })
-        }
-        const deleteUser = await User.findByIdAndDelete(id)
-        if (!deleteUser) {
-            return res.json({
-                status: 400,
-                success: false,
-                message: "id is wrong and document is not exist"
-            })
-        }
-        res.json({
-            status: 200,
-            success: true,
-            message: "user is deleted successfully",
-            data: deleteUser
-        })
-    } catch (err) {
-        res.json({
 
-            status: 500,
-            success: false,
-            message: "internal server error",
-            error: err.message
-        })
-    }
-}
-module.exports = { createUser, loginUser, getAllUser, getUserById, updateUserById, deleteUserById }
+
+
+
+
+
+// const getAllUser = async(req, res) => {
+//     try {
+//         const user = await User.find()
+//         res.json({
+//             status: 2000,
+//             success: true,
+//             message: "all user is get successfully",
+//             data: user
+//         })
+//     } catch (err) {
+//         res.json({
+//             status: 500,
+//             success: false,
+//             message: "internal server error",
+//             error: err.message
+//         })
+
+//     }
+// }
+
+
+// //get user by id
+
+// const getUserById = async(req, res) => {
+//         try {
+//             const { id } = req.body
+//             if (!id) {
+//                 return res.json({
+//                     status: 400,
+//                     success: false,
+//                     message: "id is required",
+
+//                 })
+//             }
+//             const user = await User.findById(id)
+//             if (!user) {
+//                 return res.json({
+//                     status: 400,
+//                     success: false,
+//                     message: "id is wrong",
+
+//                 })
+//             }
+//             res.json({
+//                 status: 200,
+//                 success: true,
+//                 message: "user is get successfully",
+//                 data: user
+//             })
+
+//         } catch (err) {
+//             res.json({
+//                 status: 500,
+//                 success: false,
+//                 message: "internal server error",
+//                 error: err.message
+//             })
+//         }
+//     }
+//     //update user by id 
+
+// const updateUserById = async(req, res) => {
+//     try {
+//         const { id, ...data } = req.body
+//         if (!id) {
+//             return res.json({
+//                 status: 400,
+//                 success: false,
+//                 message: "id is required"
+//             })
+//         }
+//         const user = await User.findByIdAndUpdate(id, data, { new: true })
+//         if (!user) {
+//             res.json({
+//                 status: 400,
+//                 success: false,
+//                 message: "id is wrong"
+//             })
+//         }
+//         res.json({
+//             status: 200,
+//             success: false,
+//             message: "user is updated successfully",
+//             data: user
+//         })
+
+//     } catch (err) {
+//         res.json({
+//             status: 500,
+//             success: false,
+//             message: "internal server error",
+//             error: err.message
+//         })
+
+//     }
+// }
+
+// //delete
+// const deleteUserById = async(req, res) => {
+//     try {
+//         const { id } = req.body
+//         if (!id) {
+//             return res.json({
+//                 status: 400,
+//                 success: false,
+//                 message: "id is required"
+//             })
+//         }
+//         const deleteUser = await User.findByIdAndDelete(id)
+//         if (!deleteUser) {
+//             return res.json({
+//                 status: 400,
+//                 success: false,
+//                 message: "id is wrong and document is not exist"
+//             })
+//         }
+//         res.json({
+//             status: 200,
+//             success: true,
+//             message: "user is deleted successfully",
+//             data: deleteUser
+//         })
+//     } catch (err) {
+//         res.json({
+
+//             status: 500,
+//             success: false,
+//             message: "internal server error",
+//             error: err.message
+//         })
+//     }
+// }
+module.exports = { createUser, loginUser, getAllUser, getUserById }
