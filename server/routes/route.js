@@ -15,7 +15,7 @@ router.post("/createstudent", createStudent)
 
 
 router.post("/loginuser", loginUser)
-router.get("/getalluser", auth, getAllUser)
+router.get("/getalluser", getAllUser)
 router.post("/getuserbyid", getUserById)
 router.post("/createpost", createPost)
 router.post("/getallpost", getAllPost)

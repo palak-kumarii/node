@@ -344,7 +344,7 @@ const sendOtp = async(req, res) => {
         }
 
         const otp = Math.floor(100000 + Math.random() * 900000).toString()
-        const expiry = Date.now() + 5 * 60 * 60 //otp five minute valid
+        const expire = Date.now() + 5 * 60 * 1000 //otp five minute valid
         user.otp = otp
         user.otpExpire = expire
 
@@ -376,7 +376,8 @@ const verifyOtp = async(req, res) => {
     try {
         const { email, otp, newpassword } = req.body
         const user = await User.findOne({ email })
-        if (!user || user.otp !== otp || Date.now() > user.otpExpire) {
+
+        if (!user || user.otp.toString() !== otp.toString()) {
             return res.json({
                 status: 400,
                 success: false,
